@@ -8,10 +8,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // console.log('Loaded')
 
-  document.querySelector('#compose-form').addEventListener('submit', function(){
-    console.log('Hello')
-    return false
-  })
+  document.querySelector('#compose-form').addEventListener('submit', send_email)
+    
 
   document.querySelector('#compose-form').onsubmit = function(){
     console.log('Submit')
@@ -22,19 +20,32 @@ document.addEventListener('DOMContentLoaded', function() {
   load_mailbox('inbox');
 });
 
-function send_email(){
+function send_email(event){
+
+  event.preventDefault();
+
   const recipints = document.querySelector('#compose-recipients').value
   const subject = document.querySelector('#compose-subject').value
   const body = document.querySelector('#compose-body').value
 
-  fatch('/emails', {
+  console.log(`recipints: ${recipints}, subject ${subject}, body: ${body}`)
+
+  fetch('/emails', {
     method: 'POST',
     body: JSON.stringify({
-      recipints: recipints,
-      subject: subject,
+        recipients: recipints,
+        subject: subject,
+        body: body
     })
   })
-
+  .then(response => response.json())
+  .then(result => {
+      // Print result
+      console.log(result);
+  })
+  .catch((error) => console.log(error));
+  
+ 
 }
 
 function compose_email() {
