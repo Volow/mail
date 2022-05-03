@@ -28,7 +28,7 @@ function send_email(event){
   const subject = document.querySelector('#compose-subject').value
   const body = document.querySelector('#compose-body').value
 
-  console.log(`recipints: ${recipints}, subject ${subject}, body: ${body}`)
+  // console.log(`recipints: ${recipints}, subject ${subject}, body: ${body}`)
 
   fetch('/emails', {
     method: 'POST',
@@ -68,4 +68,58 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  if(mailbox == 'inbox'){
+    fetch('/emails/inbox')
+      .then(response => response.json())
+      .then(emails => {
+          // Print emails
+          emails.forEach(email => {
+
+            const div = document.createElement('div')
+            div.style.border = 'solid'
+            div.style.margin = '3px'
+            div.style.borderWidth = '1px'
+            div.style.borderRadius = '3px'
+
+            div.addEventListener('click', () =>{
+              read_email(email['id'])
+            })
+
+            const sender = document.createElement('p')
+            sender.style.margin = '5px'
+
+            const subject = document.createElement('p')
+            subject.style.margin = '5px'
+
+            const body = document.createElement('p')
+            body.style.margin = '5px'
+
+            sender.innerHTML = `Sender: ${email['sender']}`  
+            div.append(sender)
+
+            subject.innerHTML = `Subject: ${email['subject']}`  
+            div.append(subject)
+
+            body.innerHTML = `Body: ${email['body']}`  
+            div.append(body)
+
+            document.querySelector('#emails-view').append(div)
+            console.log(email);
+          }); 
+
+          // ... do something else with emails ...
+      });
+  }
+}
+
+function read_email(email_id){
+  fetch(`/emails/${email_id}`)
+  .then(response => response.json())
+  .then(email => {
+      // Print email
+      console.log(email);
+
+      // ... do something else with email ...
+  });
 }
