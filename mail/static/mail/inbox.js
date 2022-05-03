@@ -69,8 +69,8 @@ function load_mailbox(mailbox) {
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
 
-  if(mailbox == 'inbox'){
-    fetch('/emails/inbox')
+  // if(mailbox === 'inbox'){
+    fetch(`/emails/${mailbox}`)
       .then(response => response.json())
       .then(emails => {
           // Print emails
@@ -81,6 +81,9 @@ function load_mailbox(mailbox) {
             div.style.margin = '3px'
             div.style.borderWidth = '1px'
             div.style.borderRadius = '3px'
+            if (email['read'] === true && mailbox === 'inbox'){
+              div.style.background = '#e4e4e4'
+            } 
 
             div.addEventListener('click', () =>{
               read_email(email['id'])
@@ -92,8 +95,8 @@ function load_mailbox(mailbox) {
             const subject = document.createElement('p')
             subject.style.margin = '5px'
 
-            const body = document.createElement('p')
-            body.style.margin = '5px'
+            // const body = document.createElement('p')
+            // body.style.margin = '5px'
 
             sender.innerHTML = `Sender: ${email['sender']}`  
             div.append(sender)
@@ -101,8 +104,8 @@ function load_mailbox(mailbox) {
             subject.innerHTML = `Subject: ${email['subject']}`  
             div.append(subject)
 
-            body.innerHTML = `Body: ${email['body']}`  
-            div.append(body)
+            // body.innerHTML = `Body: ${email['body']}`  
+            // div.append(body)
 
             document.querySelector('#emails-view').append(div)
             console.log(email);
@@ -111,9 +114,12 @@ function load_mailbox(mailbox) {
           // ... do something else with emails ...
       });
   }
-}
+// }
 
 function read_email(email_id){
+
+  document.querySelector('#emails-view').innerHTML = ''
+
   fetch(`/emails/${email_id}`)
   .then(response => response.json())
   .then(email => {
@@ -121,5 +127,39 @@ function read_email(email_id){
       console.log(email);
 
       // ... do something else with email ...
+
+      const div = document.createElement('div')
+      div.style.border = 'solid'
+      div.style.margin = '3px'
+      div.style.borderWidth = '1px'
+      div.style.borderRadius = '3px'    
+
+      const sender = document.createElement('p')
+      sender.style.margin = '5px'
+
+      const subject = document.createElement('p')
+      subject.style.margin = '5px'
+
+      const body = document.createElement('p')
+      body.style.margin = '5px'
+
+      sender.innerHTML = `Sender: ${email['sender']}`  
+      div.append(sender)
+
+      subject.innerHTML = `Subject: ${email['subject']}`  
+      div.append(subject)
+
+      body.innerHTML = `Body: ${email['body']}`  
+      div.append(body)
+
+      document.querySelector('#emails-view').append(div)
+
   });
+  fetch(`/emails/${email_id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
+  // load_mailbox('inbox')
 }
