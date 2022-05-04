@@ -51,7 +51,7 @@ function send_email(event){
   // load_mailbox('sent', result)
 }
 
-function compose_email(recipient = '', subject='', body = '') {
+function compose_email(recipient = '', subject_reply='', body = '') {
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
@@ -59,9 +59,9 @@ function compose_email(recipient = '', subject='', body = '') {
 
   console.log(recipient)
 
-  if(recipient !== ''){
+  if(recipient !== '' && subject_reply !== ''){
     document.querySelector('#compose-recipients').value = recipient;
-    document.querySelector('#compose-subject').value = subject
+    document.querySelector('#compose-subject').value = subject_reply
     document.querySelector('#compose-body').value = body;
   }else{
     // Clear out composition fields
@@ -212,9 +212,9 @@ function email_view(email, mailbox){
         console.log('reply')
 
         const recipient = email['sender']
-        const subject = ((email["subject"].match(/^(Re:)\s/)) ? email["subject"] : "Re: " + email["subject"])
+        const subject_reply = ((email["subject"].match(/^(Re:)\s/)) ? email["subject"] : "Re: " + email["subject"])
         const body = `On ${email["timestamp"]} ${email["sender"]} wrote:\n${email["body"]}\n-------------------------------------\n`
-        compose_email(recipient, subject, body)
+        compose_email(recipient, subject_reply, body)
       })
     }
     
